@@ -1,0 +1,56 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build (in container)",
+            "type": "shell",
+            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging ./build-unix.sh",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}"
+                ],
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            }
+        },
+        // {
+        //     "label": "clean (in container)",
+        //     "type": "shell",
+        //     "command": "docker run --privileged -v c:/vsc_docker_cc_gdb/:/root vsc_docker_cc_gdb make clean",
+        //     "group": "build",
+        //     "problemMatcher": []
+        // },
+        {
+            "label": "remove containers",
+            "type": "shell",
+            "command": "docker rm -f $(docker ps -a -q)",
+            "problemMatcher": []
+        },
+        {
+            "label": "run the code",
+            "type": "shell",
+            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging ./bin/ome2_au_merging --c /usr/local/src/au_merging/data/config/epg_parameters.ini --s au_administrative_unit_2 --t administrative_unit_1_w --cc fr",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "prepare to debug",
+            "type": "shell",
+            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging --name au_merging_container -it au_merging ",
+            "group": "build",
+            "problemMatcher": []
+        }
+    ]
+}
