@@ -129,7 +129,7 @@ namespace calcul{
 
             if (_verbose) _logger->log(epg::log::DEBUG,fAu.getId());
 
-            ign::feature::FeatureFilter filter( "ST_Intersects("+_fsAuArea->getFeatureType().getDefaultGeometryName()+",ST_SetSRID(ST_GeomFromText('"+fAuGeom.toString()+"'),3035))");
+            ign::feature::FeatureFilter filter( countryCodeName+" = '"+_countryCode+"' AND ST_Intersects("+_fsAuArea->getFeatureType().getDefaultGeometryName()+",ST_SetSRID(ST_GeomFromText('"+fAuGeom.toString()+"'),3035))");
             filter.addAttribute( _fsAuArea->getFeatureType().getIdName() );
             filter.addAttribute( stepName );
             filter.addAttribute( _fsAuArea->getFeatureType().getDefaultGeometryName() );
