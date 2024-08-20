@@ -211,12 +211,12 @@ namespace calcul{
                 for ( size_t j = 0 ; j < mergedMp.polygonN(i).numRings() ; ++j ) {
                     bool errorFound = false;
                     if (epg::tools::geometry::isSlimSurface(mergedMp.polygonN(i).ringN(j), slimSurfaceWidth)) {
-                        _logger->log(epg::log::ERROR, "slim surface detected");
+                        _logger->log(epg::log::WARN, "slim surface detected");
                         errorFound = true;
                     }
                     double area = abs(epg::tools::geometry::getArea(mergedMp.polygonN(i).ringN(j)));
                     if (area < smallSurfaceArea) {
-                        _logger->log(epg::log::ERROR, "small surface detected");
+                        _logger->log(epg::log::WARN, "small surface detected");
                         errorFound = true;
                     }
                     if (errorFound) { 

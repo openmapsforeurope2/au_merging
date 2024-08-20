@@ -114,12 +114,12 @@ link_directories(
 set(EXECUTABLE_OUTPUT_PATH bin/${CMAKE_BUILD_TYPE})
 
 #configuration de l'executable
-file(GLOB_RECURSE OME2_CF_GENERATION_HEADERS include/*.h)
-file(GLOB_RECURSE OME2_CF_GENERATION_SOURCES src/*.cpp)
+file(GLOB_RECURSE APP_HEADERS include/*.h)
+file(GLOB_RECURSE APP_SOURCES src/*.cpp)
 
 IF(MSVC_IDE)
-	SOURCE_GROUP_RECURSE( "${OME2_CF_GENERATION_HEADERS}" "${CMAKE_SOURCE_DIR}/include/" "Header Files" )
-	SOURCE_GROUP_RECURSE( "${OME2_CF_GENERATION_SOURCES}" "${CMAKE_SOURCE_DIR}/src/" "Source Files" )
+	SOURCE_GROUP_RECURSE( "${APP_HEADERS}" "${CMAKE_SOURCE_DIR}/include/" "Header Files" )
+	SOURCE_GROUP_RECURSE( "${APP_SOURCES}" "${CMAKE_SOURCE_DIR}/src/" "Source Files" )
 ENDIF(MSVC_IDE)
 
 #include de mes headers
@@ -130,8 +130,8 @@ include_directories(include)
 
 add_executable(
 	${PROJECT_NAME} 
-	${OME2_CF_GENERATION_HEADERS}
-	${OME2_CF_GENERATION_SOURCES}
+	${APP_HEADERS}
+	${APP_SOURCES}
 )
 set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
 
