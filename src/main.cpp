@@ -84,6 +84,9 @@ int main(int argc, char *argv[])
 		app::params::ThemeParameters* themeParameters = app::params::ThemeParametersS::getInstance();
         epg::params::tools::loadParams( *themeParameters, themeParametersFile );
 
+        //info de connection db
+        context->loadEpgParameters( themeParameters->getValue(DB_CONF_FILE).toString() );
+
         //lancement du traitement
         app::calcul::AuMergingOp::compute(auTableSource, auTable, countryCode, verbose);
 

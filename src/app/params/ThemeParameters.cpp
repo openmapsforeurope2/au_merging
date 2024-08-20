@@ -15,6 +15,7 @@ namespace params{
 	///
 	ThemeParameters::ThemeParameters()
 	{
+		_initParameter( DB_CONF_FILE, "DB_CONF_FILE" );
 		_initParameter( STEP, "STEP" );
 		_initParameter( STEP_VALUE, "STEP_VALUE" );
 		_initParameter( SLIM_SURFACE_WIDTH, "SLIM_SURFACE_WIDTH" );
