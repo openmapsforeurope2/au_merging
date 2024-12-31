@@ -6,7 +6,7 @@
         "request": "launch",
         "program": "/usr/local/src/au_merging/bin/ome2_au_mergingd",
         "cwd": "/usr/local/src/au_merging",
-        "args": ["--c", "/usr/local/src/au_merging/data/config/epg_parameters.ini", "--s", "au_administrative_unit_6", "--t", "administrative_unit_5_w", "--cc", "fr"],
+        "args": ["--c", "/usr/local/src/au_merging/config/epg_parameters.ini", "--s", "au_administrative_unit_6", "--t", "administrative_unit_5_w", "--cc", "fr"],
         "stopAtEntry": true,
         "environment": [{ "name": "config", "value": "Debug" }],
         "externalConsole": true,
