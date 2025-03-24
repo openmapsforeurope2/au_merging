@@ -24,7 +24,7 @@ namespace calcul{
 	///
 	///
 	///
-    void AuMergingOp::compute(
+    void AuMergingOp::Compute(
         std::string sourceTable,
         std::string workingTable,
         std::string countryCode, 
