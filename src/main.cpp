@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
         logger->log(epg::log::INFO, "[START AU-MERGING PROCESS ] " + epg::tools::TimeTools::getTime());
 
         //lancement du traitement
-        app::calcul::AuMergingOp::compute(auTableSource, auTable, countryCode, verbose);
+        app::calcul::AuMergingOp::Compute(auTableSource, auTable, countryCode, verbose);
 
 		logger->log(epg::log::INFO, "[END AU-MERGING PROCESS ] " + epg::tools::TimeTools::getTime());
 

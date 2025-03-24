@@ -9,18 +9,25 @@
 
 //SOCLE
 #include <ign/feature/sql/FeatureStorePostgis.h>
-// #include <epg/tools/MultiLineStringTool.h>
 
 
 namespace app{
 namespace calcul{
 
+	/// @brief Classe dédiée à la fusion des surfaces administratives
+	/// permettant de dériver la table des unités administratives de niveau n 
+	/// depuis la table des unités administratives de niveau n-1
 	class AuMergingOp {
 
 	public:
 
-		/// \brief
-		static void compute(
+		/// @brief Lance la création des surfaces administratives de niveau n
+		/// par dérivation (fusion) des surfaces administratives de niveau n-1
+		/// @param sourceTable Table source à dériver (unités administratives de niveau n-1)
+		/// @param workingTable Table de travail dans laquelle sont créées les unités administratives de niveau n
+		/// @param countryCode Code pays simple
+		/// @param verbose Mode verbeux
+		static void Compute(
 			std::string sourceTable,
 			std::string workingTable, 
 			std::string countryCode, 
