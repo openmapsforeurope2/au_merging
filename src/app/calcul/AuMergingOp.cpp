@@ -12,6 +12,7 @@
 #include <epg/tools/TimeTools.h>
 #include <epg/tools/geometry/getArea.h>
 #include <epg/tools/geometry/isSlimSurface.h>
+#include <ome2/feature/sql/NotDestroyedTools.h>
 
 // SOCLE
 #include <ign/geometry/io/WktWriter.h>
@@ -112,11 +113,11 @@ namespace calcul{
         double const snapTolerance = themeParameters->getValue( SNAP_TOLERANCE ).toDouble();
 
         ign::feature::sql::FeatureStorePostgis* fsAu = context->getDataBaseManager().getFeatureStore(workingTable, idName, geomName);
-        ign::feature::FeatureIteratorPtr itAu = fsAu->getFeatures(ign::feature::FeatureFilter(countryCodeName+" = '"+_countryCode+"'"));
+        ign::feature::FeatureIteratorPtr itAu = ome2::feature::sql::getFeatures( fsAu, ign::feature::FeatureFilter(countryCodeName+" = '"+_countryCode+"'"));
         // ign::feature::FeatureIteratorPtr itAu = fsAu->getFeatures(ign::feature::FeatureFilter("inspireid in ('760051db-cd11-4aaa-9a60-23a4a80f9120')"));
 
         //patience
-        int numFeatures = epg::sql::tools::numFeatures( *fsAu, ign::feature::FeatureFilter(countryCodeName+" = '"+_countryCode+"'"));
+        int numFeatures = ome2::feature::sql::numFeatures( *fsAu, ign::feature::FeatureFilter(countryCodeName+" = '"+_countryCode+"'"));
         boost::progress_display display( numFeatures , std::cout, "[ au_merging  % complete ]\n") ;     
 
         while (itAu->hasNext())
@@ -133,7 +134,7 @@ namespace calcul{
             filter.addAttribute( _fsAuArea->getFeatureType().getIdName() );
             filter.addAttribute( stepName );
             filter.addAttribute( _fsAuArea->getFeatureType().getDefaultGeometryName() );
-            ign::feature::FeatureIteratorPtr itAuArea = _fsAuArea->getFeatures(filter);
+            ign::feature::FeatureIteratorPtr itAuArea = ome2::feature::sql::getFeatures(_fsAuArea, filter);
 
             bool isModified = false;
             while (itAuArea->hasNext())
@@ -155,7 +156,7 @@ namespace calcul{
             if ( !isModified ) continue;
 
             
-            ign::feature::FeatureIteratorPtr itAuArea2 = _fsAuArea->getFeatures(filter);
+            ign::feature::FeatureIteratorPtr itAuArea2 = ome2::feature::sql::getFeatures(_fsAuArea, filter);
 
             ign::geometry::GeometryPtr mergedGeom ;
             while (itAuArea2->hasNext())
