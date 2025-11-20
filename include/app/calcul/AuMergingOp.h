@@ -23,20 +23,18 @@ namespace calcul{
 
 		/// @brief Lance la création des surfaces administratives de niveau n
 		/// par dérivation (fusion) des surfaces administratives de niveau n-1
-		/// @param sourceTable Table source à dériver (unités administratives de niveau n-1)
-		/// @param workingTable Table de travail dans laquelle sont créées les unités administratives de niveau n
 		/// @param countryCode Code pays simple
 		/// @param verbose Mode verbeux
-		static void Compute(
-			std::string sourceTable,
-			std::string workingTable, 
+		static void Compute( 
 			std::string countryCode, 
 			bool verbose
 		);
 
 	private:
 		//--
-		ign::feature::sql::FeatureStorePostgis*            _fsAuArea;
+		ign::feature::sql::FeatureStorePostgis*            _fsTarget;
+		//--
+		ign::feature::sql::FeatureStorePostgis*            _fsSource;
 		//--
 		epg::log::EpgLogger*                               _logger;
 		//--
@@ -49,16 +47,16 @@ namespace calcul{
 	private:
 
 		//--
-		AuMergingOp( std::string sourceTable, std::string countryCode, bool verbose );
+		AuMergingOp( std::string countryCode, bool verbose );
 
 		//--
 		~AuMergingOp();
 
 		//--
-		void _init(std::string sourceTable);
+		void _init();
 
 		//--
-		void _compute(std::string workingTable);
+		void _compute() const;
     };
 
 }

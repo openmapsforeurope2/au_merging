@@ -9,6 +9,7 @@
 
 //OME2
 #include <ome2/utils/setTableName.h>
+#include <ome2/utils/getEnvStr.h>
 
 //APP
 #include <app/params/ThemeParameters.h>
@@ -25,18 +26,19 @@ int main(int argc, char *argv[])
     std::string     logDirectory = "";
     std::string     epgParametersFile = "";
     std::string     themeParametersFile = "";
-    std::string     auTableSource = "";
-    std::string     auTable = "";
+    std::string     suffix = "";
     std::string     countryCode = "";
+    std::string     sourceLevel = "";
+    std::string     targetLevel = "";
     bool            verbose = true;
 
     po::options_description desc("Allowed options");
     desc.add_options()
         ("help", "produce help message")
         ("c" , po::value< std::string >(&epgParametersFile)     , "conf file" )
-        ("s" , po::value< std::string >(&auTableSource)         , "source table" )
-        ("t" , po::value< std::string >(&auTable)               , "table" )
-        ("cc" , po::value< std::string >(&countryCode)          , "country code" )
+        ("s", po::value< std::string >(&suffix)                 , "working table suffix" )
+        ("sl", po::value< std::string >(&sourceLevel)           , "source level" )
+        ("tl", po::value< std::string >(&targetLevel)           , "target level" )
     ;
 
     //main log
@@ -47,16 +49,29 @@ int main(int argc, char *argv[])
 
     int returnValue = 0;
     try{
+        
+        po::parsed_options parsed = po::command_line_parser(argc, argv)
+                                    .options(desc)
+                                    .allow_unregistered()
+                                    .run();
 
         po::variables_map vm;
-        int style = po::command_line_style::default_style & ~po::command_line_style::allow_guessing;
-        po::store( po::parse_command_line( argc, argv, desc, style ), vm );
+        po::store( parsed, vm );
         po::notify( vm );    
 
         if ( vm.count( "help" ) ) {
             std::cout << desc << std::endl;
             return 1;
         }
+
+        // Récupérer les arguments libres (non reconnus)
+        std::vector<std::string> countries = po::collect_unrecognized(parsed.options, po::include_positional);
+
+        if ( countries.size() != 1 ) {
+            std::string mError = "spécifier un et un seul pays en argument";
+            IGN_THROW_EXCEPTION(mError);
+        }
+        countryCode = countries.front();
 
         //parametres EPG
 		context->loadEpgParameters( epgParametersFile );
@@ -89,16 +104,47 @@ int main(int argc, char *argv[])
 
         //info de connection db
         context->loadEpgParameters( themeParameters->getValue(DB_CONF_FILE).toString() );
+        //pour IGN-MUT
+        if( context->getConfigParameters().parameterHasNullValue(HOST) ) 
+            context->getConfigParameters().setParameter(HOST, ign::data::String(ome2::utils::getEnvStr("HOST")));
+        if( context->getConfigParameters().parameterHasNullValue(PORT) ) 
+            context->getConfigParameters().setParameter(PORT, ign::data::String(ome2::utils::getEnvStr("PORT")));
+        if( context->getConfigParameters().parameterHasNullValue(USER) ) 
+            context->getConfigParameters().setParameter(USER, ign::data::String(ome2::utils::getEnvStr("USER")));
+        if( context->getConfigParameters().parameterHasNullValue(PASSWORD) ) 
+            context->getConfigParameters().setParameter(PASSWORD, ign::data::String(ome2::utils::getEnvStr("PASSWORD")));
+        if( context->getConfigParameters().parameterHasNullValue(DATABASE) ) 
+            context->getConfigParameters().setParameter(DATABASE, ign::data::String(ome2::utils::getEnvStr("DATABASE")));
+
+        //table de travail
+        std::string levelTemplate = "<LEVEL>";
+        if ( !suffix.empty() ) {
+            std::string tableBaseName = themeParameters->getValue(TARGET_TABLE_BASE).toString();
+            size_t pos = tableBaseName.find(levelTemplate);
+            if (pos != std::string::npos) {
+                tableBaseName.replace(pos, levelTemplate.length(), targetLevel);
+            }
+            std::string tableName = tableBaseName + "_" + countryCode + "_" + suffix;
+            themeParameters->setParameter(TARGET_TABLE, ign::data::String(tableName));
+        }
+
+        //table source
+        std::string sourceTableName = themeParameters->getValue(SOURCE_TABLE_BASE).toString();
+        size_t pos = sourceTableName.find(levelTemplate);
+        if (pos != std::string::npos) {
+            sourceTableName.replace(pos, levelTemplate.length(), sourceLevel);
+        }
+        themeParameters->setParameter(SOURCE_TABLE, ign::data::String(sourceTableName));
 
         //set BDD search path
-        ome2::utils::setTableName(auTable);
-        ome2::utils::setTableName(auTableSource);
+        ome2::utils::setTableName<app::params::ThemeParametersS>(TARGET_TABLE);
+        ome2::utils::setTableName<app::params::ThemeParametersS>(SOURCE_TABLE);
         ome2::utils::setTableName<epg::params::EpgParametersS>(TARGET_BOUNDARY_TABLE);
 
         logger->log(epg::log::INFO, "[START AU-MERGING PROCESS ] " + epg::tools::TimeTools::getTime());
 
         //lancement du traitement
-        app::calcul::AuMergingOp::Compute(auTableSource, auTable, countryCode, verbose);
+        app::calcul::AuMergingOp::Compute(countryCode, verbose);
 
 		logger->log(epg::log::INFO, "[END AU-MERGING PROCESS ] " + epg::tools::TimeTools::getTime());
 

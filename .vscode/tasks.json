@@ -4,7 +4,7 @@
         {
             "label": "build package",
             "type": "shell",
-            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging ./build-unix-package.sh",
+            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging_base ./build-unix-package.sh",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -28,7 +28,7 @@
         {
             "label": "build release",
             "type": "shell",
-            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging ./build-unix-release.sh",
+            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging_base ./build-unix-release.sh",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -52,7 +52,7 @@
         {
             "label": "build debug",
             "type": "shell",
-            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging ./build-unix-debug.sh",
+            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging_base ./build-unix-debug.sh",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -89,14 +89,14 @@
         {
             "label": "run the code",
             "type": "shell",
-            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging ./bin/au_merging --c /usr/local/src/au_merging/config/epg_parameters.ini --s prod.administrative_unit_2 --t work.administrative_unit_1_w --cc fr",
+            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging_base ./bin/au_merging --c /usr/local/src/au_merging/config/epg_parameters.ini --sl 2 --tl 1 --s 20251113 fr",
             "group": "build",
             "problemMatcher": []
         },
         {
             "label": "prepare to debug",
             "type": "shell",
-            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging --name au_merging_container -it au_merging ",
+            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging --name au_merging_base_container -it au_merging_base ",
             "group": "build",
             "problemMatcher": []
         }

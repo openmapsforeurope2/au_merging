@@ -6,7 +6,7 @@
         "request": "launch",
         "program": "/usr/local/src/au_merging/bin/au_mergingd",
         "cwd": "/usr/local/src/au_merging",
-        "args": ["--c", "/usr/local/src/au_merging/config/epg_parameters.ini", "--s", "au.administrative_unit_6", "--t", "work.administrative_unit_5_w", "--cc", "fr"],
+        "args": ["--c", "/usr/local/src/au_merging/config/epg_parameters.ini", "--sl", "6", "--tl", "5", "--s", "20251113", "fr"],
         "stopAtEntry": true,
         "environment": [{ "name": "config", "value": "Debug" }],
         "externalConsole": true,
@@ -21,7 +21,7 @@
         "pipeTransport": {
             "debuggerPath": "/usr/bin/gdb",
             "pipeProgram": "docker",
-            "pipeArgs": ["exec", "-i", "au_merging_container", "sh", "-c"],
+            "pipeArgs": ["exec", "-i", "au_merging_base_container", "sh", "-c"],
             "pipeCwd": "${workspaceRoot}"
         },
         "MIMode": "gdb",

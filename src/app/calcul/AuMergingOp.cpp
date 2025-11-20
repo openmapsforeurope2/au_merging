@@ -26,23 +26,21 @@ namespace calcul{
 	///
 	///
     void AuMergingOp::Compute(
-        std::string sourceTable,
-        std::string workingTable,
         std::string countryCode, 
-        bool verbose) 
-    {
-        AuMergingOp auMergingOp(sourceTable, countryCode, verbose);
-        auMergingOp._compute(workingTable);
+        bool verbose
+    ) {
+        AuMergingOp auMergingOp(countryCode, verbose);
+        auMergingOp._compute();
     }
 
     ///
 	///
 	///
-    AuMergingOp::AuMergingOp( std::string sourceTable, std::string countryCode, bool verbose ):
+    AuMergingOp::AuMergingOp( std::string countryCode, bool verbose ):
         _countryCode( countryCode ),
         _verbose( verbose )
     {
-        _init(sourceTable);
+        _init();
     }
 
     ///
@@ -62,7 +60,7 @@ namespace calcul{
     ///
 	///
 	///
-    void AuMergingOp::_init(std::string sourceTable) 
+    void AuMergingOp::_init() 
     {
         //--
         _logger = epg::log::EpgLoggerS::getInstance();
@@ -72,12 +70,19 @@ namespace calcul{
 
         // epg parameters
         epg::params::EpgParameters const& epgParams = context->getEpgParameters();
-
         std::string const idName = epgParams.getValue( ID ).toString();
         std::string const geomName = epgParams.getValue( GEOM ).toString();
+
+        // app parameters
+        params::ThemeParameters* themeParameters = params::ThemeParametersS::getInstance();
+        std::string const sourceTable = themeParameters->getValue( SOURCE_TABLE ).toString();
+        std::string const targetTable = themeParameters->getValue( TARGET_TABLE ).toString();
         
         //--
-        _fsAuArea = context->getDataBaseManager().getFeatureStore(sourceTable, idName, geomName);
+        _fsSource = context->getDataBaseManager().getFeatureStore(sourceTable, idName, geomName);
+
+        //--
+        _fsTarget = context->getDataBaseManager().getFeatureStore(targetTable, idName, geomName);
     
         //--
         _shapeLogger = epg::log::ShapeLoggerS::getInstance();
@@ -93,7 +98,7 @@ namespace calcul{
     ///
 	///
 	///
-    void AuMergingOp::_compute(std::string workingTable)
+    void AuMergingOp::_compute() const
     {
         epg::Context* context = epg::ContextS::getInstance();
 
@@ -106,18 +111,17 @@ namespace calcul{
 
         // app parameters
         params::ThemeParameters* themeParameters = params::ThemeParametersS::getInstance();
-        std::string const stepName = themeParameters->getValue( STEP ).toString();
-        std::string const stepValue = themeParameters->getValue( STEP_VALUE ).toString();
+        // std::string const stepName = themeParameters->getValue( STEP ).toString();
+        // std::string const stepValue = themeParameters->getValue( STEP_VALUE ).toString();
         double const slimSurfaceWidth = themeParameters->getValue( SLIM_SURFACE_WIDTH ).toDouble();
         double const smallSurfaceArea = themeParameters->getValue( SMALL_SURFACE_AREA ).toDouble();
         double const snapTolerance = themeParameters->getValue( SNAP_TOLERANCE ).toDouble();
 
-        ign::feature::sql::FeatureStorePostgis* fsAu = context->getDataBaseManager().getFeatureStore(workingTable, idName, geomName);
-        ign::feature::FeatureIteratorPtr itAu = ome2::feature::sql::getFeatures( fsAu, ign::feature::FeatureFilter(countryCodeName+" = '"+_countryCode+"'"));
-        // ign::feature::FeatureIteratorPtr itAu = fsAu->getFeatures(ign::feature::FeatureFilter("inspireid in ('760051db-cd11-4aaa-9a60-23a4a80f9120')"));
+        ign::feature::FeatureIteratorPtr itAu = ome2::feature::sql::NotDestroyedTools::GetFeatures( *_fsTarget, ign::feature::FeatureFilter(countryCodeName+" = '"+_countryCode+"'"));
+        // ign::feature::FeatureIteratorPtr itAu = _fsTarget->getFeatures(ign::feature::FeatureFilter("inspireid in ('760051db-cd11-4aaa-9a60-23a4a80f9120')"));
 
         //patience
-        int numFeatures = ome2::feature::sql::numFeatures( *fsAu, ign::feature::FeatureFilter(countryCodeName+" = '"+_countryCode+"'"));
+        int numFeatures = ome2::feature::sql::NotDestroyedTools::NumFeatures( *_fsTarget, ign::feature::FeatureFilter(countryCodeName+" = '"+_countryCode+"'"));
         boost::progress_display display( numFeatures , std::cout, "[ au_merging  % complete ]\n") ;     
 
         while (itAu->hasNext())
@@ -130,11 +134,11 @@ namespace calcul{
 
             if (_verbose) _logger->log(epg::log::DEBUG,fAu.getId());
 
-            ign::feature::FeatureFilter filter( countryCodeName+" = '"+_countryCode+"' AND ST_Intersects("+_fsAuArea->getFeatureType().getDefaultGeometryName()+",ST_SetSRID(ST_GeomFromText('"+fAuGeom.toString()+"'),3035))");
-            filter.addAttribute( _fsAuArea->getFeatureType().getIdName() );
-            filter.addAttribute( stepName );
-            filter.addAttribute( _fsAuArea->getFeatureType().getDefaultGeometryName() );
-            ign::feature::FeatureIteratorPtr itAuArea = ome2::feature::sql::getFeatures(_fsAuArea, filter);
+            ign::feature::FeatureFilter filter( countryCodeName+" = '"+_countryCode+"' AND ST_Intersects("+_fsSource->getFeatureType().getDefaultGeometryName()+",ST_SetSRID(ST_GeomFromText('"+fAuGeom.toString()+"'),3035))");
+            filter.addAttribute( _fsSource->getFeatureType().getIdName() );
+            // filter.addAttribute( stepName );
+            filter.addAttribute( _fsSource->getFeatureType().getDefaultGeometryName() );
+            ign::feature::FeatureIteratorPtr itAuArea = ome2::feature::sql::NotDestroyedTools::GetFeatures(*_fsSource, filter);
 
             bool isModified = false;
             while (itAuArea->hasNext())
@@ -148,7 +152,10 @@ namespace calcul{
 
                 if ( areaInter < fAuAreaGeomArea*0.9 ) continue;
 
-                if ( fAuArea.getAttribute( stepName ).toString() != stepValue ) continue;
+                // if ( fAuArea.getAttribute( stepName ).toString() != stepValue ) continue;
+                // TODO : trouver un autre mechanisme pour ne pas traiter les surfaces composer uniquement de
+                // surfaces non-modifiées (avec gcms_modif?)
+                // sinon supprimer cette boucle
 
                 isModified = true;
                 break;
@@ -156,7 +163,7 @@ namespace calcul{
             if ( !isModified ) continue;
 
             
-            ign::feature::FeatureIteratorPtr itAuArea2 = ome2::feature::sql::getFeatures(_fsAuArea, filter);
+            ign::feature::FeatureIteratorPtr itAuArea2 = ome2::feature::sql::NotDestroyedTools::GetFeatures(*_fsSource, filter);
 
             ign::geometry::GeometryPtr mergedGeom ;
             while (itAuArea2->hasNext())
@@ -229,7 +236,7 @@ namespace calcul{
             }
 
             fAu.setGeometry( *mergedGeom ) ;
-			fsAu->modifyFeature( fAu ) ;
+			_fsTarget->modifyFeature( fAu ) ;
         }
     }
 

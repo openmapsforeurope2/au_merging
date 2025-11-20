@@ -22,7 +22,7 @@ La table cible est la table de travail dans laquelle ont été extraite les surf
 
 La table source est une table des unités administratives d'un échelon supérieur à celui de la table cible (par soucis de rapidité de calcul on prend, si possible, l'échelon immédiatement supérieur).
 
-L'algorithme détermine pour chaque objet de la table cible quels sont les objets (polygones) de la table source qui le constitue. Si l'un de ces objets sources à précédemment été mis à jour (cela est tracé à l'aide du champs 'w_step') alors une nouvelle géométrie est calculée pour l'objet cible par fusion des objets sources qui le compose.
+L'algorithme détermine pour chaque objet de la table cible quels sont les objets (polygones) de la table source qui le constitue. Si l'un de ces objets sources à précédemment été mis à jour alors une nouvelle géométrie est calculée pour l'objet cible par fusion des objets sources qui le compose.
  
 
 ## Configuration
@@ -40,14 +40,15 @@ L'outil s'utilise en ligne de commande.
 Paramètres :
 
 * c [obligatoire] : chemin vers le fichier de configuration
-* t [obligatoire] : nom de la table de travail
-* s [obligatoire] : nom de la table source
-* cc [obligatoire] : code pays simple
+* s [obligatoire] : suffix de la table de travail
+* sl [obligatoire] : niveau administratif source
+* tl [obligatoire] : niveau administratif cible
+* argument libre [obligatoire] : code pays
 
 <br>
 
 Exemples d'appel:
 
 ~~~
-bin/au_merging --c path/to/config/epg_parmaters.ini --s prod.administrative_unit_2 --t work.administrative_unit_1_w --cc fr
+bin/au_merging --c path/to/config/epg_parmaters.ini --tl 2 --sl 1 --s 20251113 fr
 ~~~
