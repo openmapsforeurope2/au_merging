@@ -2,33 +2,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build package",
-            "type": "shell",
-            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging_base ./build-unix-package.sh",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": {
-                "owner": "cpp",
-                "fileLocation": [
-                    "relative",
-                    "${workspaceFolder}"
-                ],
-                "pattern": {
-                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
-                    "file": 1,
-                    "line": 2,
-                    "column": 3,
-                    "severity": 4,
-                    "message": 5
-                }
-            }
-        },
-        {
             "label": "build release",
             "type": "shell",
-            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging_base ./build-unix-release.sh",
+            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging_dev sh -c 'CONFIG=Release ./build-unix.sh'",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -52,7 +28,7 @@
         {
             "label": "build debug",
             "type": "shell",
-            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging_base ./build-unix-debug.sh",
+            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging_dev sh -c 'CONFIG=Debug ./build-unix.sh'",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -73,13 +49,6 @@
                 }
             }
         },
-        // {
-        //     "label": "clean (in container)",
-        //     "type": "shell",
-        //     "command": "docker run --privileged -v c:/vsc_docker_cc_gdb/:/root vsc_docker_cc_gdb make clean",
-        //     "group": "build",
-        //     "problemMatcher": []
-        // },
         {
             "label": "remove containers",
             "type": "shell",
@@ -89,14 +58,14 @@
         {
             "label": "run the code",
             "type": "shell",
-            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging_base ./bin/au_merging --c /usr/local/src/au_merging/config/epg_parameters.ini --sl 2 --tl 1 --s 20251113 fr",
+            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging_dev ./bin/au_merging --c /usr/local/src/au_merging/config/epg_parameters.ini --sl 2 --tl 1 --s 20251113 fr",
             "group": "build",
             "problemMatcher": []
         },
         {
             "label": "prepare to debug",
             "type": "shell",
-            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging --name au_merging_base_container -it au_merging_base ",
+            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging --name au_merging_dev_container -it au_merging_dev",
             "group": "build",
             "problemMatcher": []
         }

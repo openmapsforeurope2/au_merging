@@ -4,25 +4,23 @@
 
 //EPG
 #include <epg/Context.h>
+#include <epg/log/EpgLogger.h>
+#include <epg/log/ShapeLogger.h>
 #include <epg/tools/TimeTools.h>
 #include <epg/params/tools/loadParameters.h>
 
 //OME2
 #include <ome2/utils/setTableName.h>
-#include <ome2/utils/getEnvStr.h>
 
 //APP
 #include <app/params/ThemeParameters.h>
 #include <app/calcul/AuMergingOp.h>
 
-
 namespace po = boost::program_options;
 
 int main(int argc, char *argv[])
 {
-    // ign::geometry::PrecisionModel::SetDefaultPrecisionModel(ign::geometry::PrecisionModel(ign::geometry::PrecisionModel::FIXED, 1.0e5, 1.0e7) );
     epg::Context* context = epg::ContextS::getInstance();
-
     std::string     logDirectory = "";
     std::string     epgParametersFile = "";
     std::string     themeParametersFile = "";
@@ -49,7 +47,6 @@ int main(int argc, char *argv[])
 
     int returnValue = 0;
     try{
-        
         po::parsed_options parsed = po::command_line_parser(argc, argv)
                                     .options(desc)
                                     .allow_unregistered()
@@ -89,10 +86,6 @@ int main(int argc, char *argv[])
                 IGN_THROW_EXCEPTION(mError);
             }
         }
-
-        epg::log::EpgLogger* logger = epg::log::EpgLoggerS::getInstance();
-        // logger->setProdOfstream( logDirectory+"/au_merging.log" );
-        logger->setDevOfstream( logDirectory+"/au_merging.log" );
         
         //repertoire de travail
         context->setLogDirectory( logDirectory );
@@ -104,17 +97,11 @@ int main(int argc, char *argv[])
 
         //info de connection db
         context->loadEpgParameters( themeParameters->getValue(DB_CONF_FILE).toString() );
-        //pour IGN-MUT
-        if( context->getConfigParameters().parameterHasNullValue(HOST) ) 
-            context->getConfigParameters().setParameter(HOST, ign::data::String(ome2::utils::getEnvStr("PGHOST")));
-        if( context->getConfigParameters().parameterHasNullValue(PORT) ) 
-            context->getConfigParameters().setParameter(PORT, ign::data::String(ome2::utils::getEnvStr("PGPORT")));
-        if( context->getConfigParameters().parameterHasNullValue(USER) ) 
-            context->getConfigParameters().setParameter(USER, ign::data::String(ome2::utils::getEnvStr("PGUSER")));
-        if( context->getConfigParameters().parameterHasNullValue(PASSWORD) ) 
-            context->getConfigParameters().setParameter(PASSWORD, ign::data::String(ome2::utils::getEnvStr("PGPASSWORD")));
-        if( context->getConfigParameters().parameterHasNullValue(DATABASE) ) 
-            context->getConfigParameters().setParameter(DATABASE, ign::data::String(ome2::utils::getEnvStr("PGDATABASE")));
+
+        //epg logger
+        epg::log::EpgLogger* logger = epg::log::EpgLoggerS::getInstance();
+        // logger->setProdOfstream( logDirectory+"/au_merging.log" );
+        logger->setDevOfstream( logDirectory+"/au_merging.log" );
 
         //table de travail
         std::string levelTemplate = "<LEVEL>";
@@ -141,13 +128,13 @@ int main(int argc, char *argv[])
         ome2::utils::setTableName<app::params::ThemeParametersS>(SOURCE_TABLE);
         ome2::utils::setTableName<epg::params::EpgParametersS>(TARGET_BOUNDARY_TABLE);
 
+
         logger->log(epg::log::INFO, "[START AU-MERGING PROCESS ] " + epg::tools::TimeTools::getTime());
 
         //lancement du traitement
         app::calcul::AuMergingOp::Compute(countryCode, verbose);
 
 		logger->log(epg::log::INFO, "[END AU-MERGING PROCESS ] " + epg::tools::TimeTools::getTime());
-
     }
     catch( ign::Exception &e )
     {
@@ -167,7 +154,9 @@ int main(int argc, char *argv[])
     logFile << "[END] " << epg::tools::TimeTools::getTime() << std::endl;
 
     epg::ContextS::kill();
-    epg::log::EpgLoggerS::kill();;
+    epg::log::EpgLoggerS::kill();
+    epg::log::ShapeLoggerS::kill();
+    epg::params::EpgParametersS::kill();
     app::params::ThemeParametersS::kill();;
     
     logFile.close();
