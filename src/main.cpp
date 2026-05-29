@@ -123,18 +123,22 @@ int main(int argc, char *argv[])
         }
         themeParameters->setParameter(SOURCE_TABLE, ign::data::String(sourceTableName));
 
+        //DEBUG
+        context->setVerboseDataBaseManager(true);
+
         //set BDD search path
+        context->getDataBaseManager().setSearchPath(themeParameters->getValue(WORKING_SCHEMA).toString());
         ome2::utils::setTableName<app::params::ThemeParametersS>(TARGET_TABLE);
         ome2::utils::setTableName<app::params::ThemeParametersS>(SOURCE_TABLE);
         ome2::utils::setTableName<epg::params::EpgParametersS>(TARGET_BOUNDARY_TABLE);
 
 
-        logger->log(epg::log::INFO, "[START AU-MERGING PROCESS ] " + epg::tools::TimeTools::getTime());
+        logger->log(epg::log::INFO, "[ START AU MERGING PROCESS ] " + epg::tools::TimeTools::getTime());
 
         //lancement du traitement
         app::calcul::AuMergingOp::Compute(countryCode, verbose);
 
-		logger->log(epg::log::INFO, "[END AU-MERGING PROCESS ] " + epg::tools::TimeTools::getTime());
+		logger->log(epg::log::INFO, "[ END AU MERGING PROCESS ] " + epg::tools::TimeTools::getTime());
     }
     catch( ign::Exception &e )
     {

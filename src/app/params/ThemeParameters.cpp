@@ -16,6 +16,7 @@ namespace params{
 	ThemeParameters::ThemeParameters()
 	{
 		_initParameter( DB_CONF_FILE, "DB_CONF_FILE" );
+		_initParameter( WORKING_SCHEMA, "WORKING_SCHEMA" );
 		_initParameter( TARGET_TABLE, "TARGET_TABLE" );
 		_initParameter( TARGET_TABLE_BASE, "TARGET_TABLE_BASE" );
 		_initParameter( SOURCE_TABLE, "SOURCE_TABLE" );
