@@ -22,7 +22,7 @@ ENV CONFIG=Release
 RUN ./build-unix.sh
 
 RUN mkdir -p /deps \
- && lddtree -l /usr/local/src/au_matching/bin/au_merging \
+ && lddtree -l /usr/local/src/au_merging/bin/au_merging \
  | grep '^/' \
  | xargs -I{} cp -v {} /deps
 

@@ -111,18 +111,15 @@ namespace calcul{
 
         // app parameters
         params::ThemeParameters* themeParameters = params::ThemeParametersS::getInstance();
-        // std::string const stepName = themeParameters->getValue( STEP ).toString();
-        // std::string const stepValue = themeParameters->getValue( STEP_VALUE ).toString();
         double const slimSurfaceWidth = themeParameters->getValue( SLIM_SURFACE_WIDTH ).toDouble();
         double const smallSurfaceArea = themeParameters->getValue( SMALL_SURFACE_AREA ).toDouble();
         double const snapTolerance = themeParameters->getValue( SNAP_TOLERANCE ).toDouble();
 
         ign::feature::FeatureIteratorPtr itAu = ome2::feature::sql::NotDestroyedTools::GetFeatures( *_fsTarget, ign::feature::FeatureFilter(countryCodeName+" = '"+_countryCode+"'"));
-        // ign::feature::FeatureIteratorPtr itAu = _fsTarget->getFeatures(ign::feature::FeatureFilter("inspireid in ('760051db-cd11-4aaa-9a60-23a4a80f9120')"));
 
         //patience
         int numFeatures = ome2::feature::sql::NotDestroyedTools::NumFeatures( *_fsTarget, ign::feature::FeatureFilter(countryCodeName+" = '"+_countryCode+"'"));
-        boost::progress_display display( numFeatures , std::cout, "[ au_merging  % complete ]\n") ;     
+        boost::progress_display display( numFeatures , std::cout, "[ au_merging % complete ]\n") ;     
 
         while (itAu->hasNext())
         {
@@ -136,7 +133,6 @@ namespace calcul{
 
             ign::feature::FeatureFilter filter( countryCodeName+" = '"+_countryCode+"' AND ST_Intersects("+_fsSource->getFeatureType().getDefaultGeometryName()+",ST_SetSRID(ST_GeomFromText('"+fAuGeom.toString()+"'),3035))");
             filter.addAttribute( _fsSource->getFeatureType().getIdName() );
-            // filter.addAttribute( stepName );
             filter.addAttribute( _fsSource->getFeatureType().getDefaultGeometryName() );
             ign::feature::FeatureIteratorPtr itAuArea = ome2::feature::sql::NotDestroyedTools::GetFeatures(*_fsSource, filter);
 
