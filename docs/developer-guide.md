@@ -98,3 +98,4 @@ On parcourt toutes les surfaces administratives de l'échelon administratif cibl
 La nouvelle géométrie de la surface cible est calculée en aggrégeant les surfaces sources composant la surface cible. Chaque surface source est accrochée avant fusion à la surface aggrégée afin d'éviter la création d'éventuels artefacts (trous fins). 
 Afin de vérifier qu'aucun artefact n'a été généré lors de la fusion, on contrôle l'ensemble des contours de la surface fusionnée. Si un contour est detecté comme étant 'fin', c'est à dire de forme longiligne et de largeur inférieure à _SLIM_SURFACE_WIDTH_, ou s'il délimite une surface dont l'aire est inférieure à _SMALL_SURFACE_AREA_, un message est inscrit dans le fichier de log. Il reviendra à l'utilisateur de vérifier la présence de tels messages dans le fichier de log, et, de vérifier, le cas échéant, si des artefacts sont bien présents.
 
+![au_merging_with_key](images/au_merging_with_key.png)
