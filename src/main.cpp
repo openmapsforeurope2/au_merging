@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
         themeParameters->setParameter(SOURCE_TABLE, ign::data::String(sourceTableName));
 
         //DEBUG
-        context->setVerboseDataBaseManager(true);
+        // context->setVerboseDataBaseManager(true);
 
         //set BDD search path
         context->getDataBaseManager().setSearchPath(themeParameters->getValue(WORKING_SCHEMA).toString());
