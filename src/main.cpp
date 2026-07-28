@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
     std::string     logDirectory = "";
     std::string     epgParametersFile = "";
     std::string     themeParametersFile = "";
+    std::string     dbName = "";
     std::string     suffix = "";
     std::string     countryCode = "";
     std::string     sourceLevel = "";
@@ -34,6 +35,7 @@ int main(int argc, char *argv[])
     desc.add_options()
         ("help", "produce help message")
         ("c" , po::value< std::string >(&epgParametersFile)     , "conf file" )
+        ("d", po::value< std::string >(&dbName)                 , "data base name" )
         ("s", po::value< std::string >(&suffix)                 , "working table suffix" )
         ("sl", po::value< std::string >(&sourceLevel)           , "source level" )
         ("tl", po::value< std::string >(&targetLevel)           , "target level" )
@@ -97,6 +99,8 @@ int main(int argc, char *argv[])
 
         //info de connection db
         context->loadEpgParameters( themeParameters->getValue(DB_CONF_FILE).toString() );
+        if( dbName != "" )
+            context->getConfigParameters().setParameter(DATABASE, ign::data::String(dbName));
 
         //epg logger
         epg::log::EpgLogger* logger = epg::log::EpgLoggerS::getInstance();
