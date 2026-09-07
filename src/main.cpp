@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
         //theme parameters
         themeParametersFile = context->getConfigParameters().getValue( THEME_PARAMETER_FILE ).toString();
 		app::params::ThemeParameters* themeParameters = app::params::ThemeParametersS::getInstance();
-        epg::params::tools::loadParams( *themeParameters, themeParametersFile );
+        epg::params::tools::loadParams( *themeParameters, themeParametersFile, countryCode );
 
         //info de connection db
         context->loadEpgParameters( themeParameters->getValue(DB_CONF_FILE).toString() );
@@ -115,8 +115,21 @@ int main(int argc, char *argv[])
             if (pos != std::string::npos) {
                 tableBaseName.replace(pos, levelTemplate.length(), targetLevel);
             }
-            std::string tableName = tableBaseName + "_" + countryCode + "_" + suffix;
+            std::string tableName = tableBaseName + "_" + suffix;
             themeParameters->setParameter(TARGET_TABLE, ign::data::String(tableName));
+        }
+
+        //source level
+        if( sourceLevel == "" ) {
+            std::string sourceLevelTag = themeParameters->getValue(LEVEL_SOURCE_TAG).toString();
+            size_t pos = sourceLevelTag.find(levelTemplate);
+            if (pos != std::string::npos) {
+                sourceLevelTag.replace(pos, levelTemplate.length(), targetLevel);
+            }
+
+            std::pair<bool, AU_PARAMETERS> foundParam = themeParameters->convertTagToParam(sourceLevelTag);
+            if(foundParam.first)
+                sourceLevel = themeParameters->getValue(foundParam.second).toString();
         }
 
         //table source

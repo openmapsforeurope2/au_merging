@@ -24,6 +24,12 @@ namespace params{
 		_initParameter( SLIM_SURFACE_WIDTH, "SLIM_SURFACE_WIDTH" );
 		_initParameter( SMALL_SURFACE_AREA, "SMALL_SURFACE_AREA" );
 		_initParameter( SNAP_TOLERANCE, "SNAP_TOLERANCE" );
+		_initParameter( LEVEL_SOURCE_TAG, "LEVEL_SOURCE_TAG" );
+		_initParameter( LEVEL_5_SOURCE, "LEVEL_5_SOURCE" );
+		_initParameter( LEVEL_4_SOURCE, "LEVEL_4_SOURCE" );
+		_initParameter( LEVEL_3_SOURCE, "LEVEL_3_SOURCE" );
+		_initParameter( LEVEL_2_SOURCE, "LEVEL_2_SOURCE" );
+		_initParameter( LEVEL_1_SOURCE, "LEVEL_1_SOURCE" );
 	}
 
 	///
