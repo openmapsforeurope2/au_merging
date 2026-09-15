@@ -1,13 +1,3 @@
-## [1.0.0] - 2025-03-24
-### Added
-- Initial release of the project
-
-### Changed
-- NTR
-
-### Fixed
-- NTR
-
 ## [1.1.0] - 2026-09-14
 
 ### Added
@@ -21,3 +11,13 @@
 - Removed the database configuration from the EPG parameter file.
 - Adapted the application to the IGN-MUT deployment environment.
 - Improved documentation and diagnostic logging.
+
+## [1.0.0] - 2025-03-24
+### Added
+- Initial release of the project
+
+### Changed
+- NTR
+
+### Fixed
+- NTR
