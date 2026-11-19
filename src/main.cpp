@@ -14,7 +14,7 @@
 
 //APP
 #include <app/params/ThemeParameters.h>
-#include <app/calcul/AuMergingOp.h>
+#include <app/calcul/AuMergingOp2.h>
 
 namespace po = boost::program_options;
 
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     std::string     dbName = "";
     std::string     suffix = "";
     std::string     countryCode = "";
-    std::string     sourceLevel = "";
+    // std::string     sourceLevel = "";
     std::string     targetLevel = "";
     bool            verbose = true;
 
@@ -37,8 +37,8 @@ int main(int argc, char *argv[])
         ("c" , po::value< std::string >(&epgParametersFile)     , "conf file" )
         ("d", po::value< std::string >(&dbName)                 , "data base name" )
         ("s", po::value< std::string >(&suffix)                 , "working table suffix" )
-        ("sl", po::value< std::string >(&sourceLevel)           , "source level" )
-        ("tl", po::value< std::string >(&targetLevel)           , "target level" )
+        // ("sl", po::value< std::string >(&sourceLevel)           , "source level" )
+        ("l", po::value< std::string >(&targetLevel)            , "target level" )
     ;
 
     //main log
@@ -119,26 +119,44 @@ int main(int argc, char *argv[])
             themeParameters->setParameter(TARGET_TABLE, ign::data::String(tableName));
         }
 
-        //source level
-        if( sourceLevel == "" ) {
-            std::string sourceLevelTag = themeParameters->getValue(LEVEL_SOURCE_TAG).toString();
-            size_t pos = sourceLevelTag.find(levelTemplate);
+        //target level
+        {
+            std::string levelValueTag = themeParameters->getValue(LEVEL_VALUE_TAG).toString();
+            size_t pos = levelValueTag.find(levelTemplate);
             if (pos != std::string::npos) {
-                sourceLevelTag.replace(pos, levelTemplate.length(), targetLevel);
+                levelValueTag.replace(pos, levelTemplate.length(), targetLevel);
             }
-
-            std::pair<bool, AU_PARAMETERS> foundParam = themeParameters->convertTagToParam(sourceLevelTag);
-            if(foundParam.first)
-                sourceLevel = themeParameters->getValue(foundParam.second).toString();
+            std::pair<bool, AU_PARAMETERS> foundParam = themeParameters->convertTagToParam(levelValueTag);
+            if(foundParam.first) {
+                std::string levelValue = themeParameters->getValue(foundParam.second).toString();
+                themeParameters->setParameter(TARGET_LEVEL_VALUE, ign::data::String(levelValue));
+            }
         }
+            
+        //source level
+        // if( sourceLevel == "" ) {
+        //     std::string sourceLevelTag = themeParameters->getValue(LEVEL_SOURCE_TAG).toString();
+        //     size_t pos = sourceLevelTag.find(levelTemplate);
+        //     if (pos != std::string::npos) {
+        //         sourceLevelTag.replace(pos, levelTemplate.length(), targetLevel);
+        //     }
+
+        //     std::pair<bool, AU_PARAMETERS> foundParam = themeParameters->convertTagToParam(sourceLevelTag);
+        //     if(foundParam.first)
+        //         sourceLevel = themeParameters->getValue(foundParam.second).toString();
+        // }
 
         //table source
-        std::string sourceTableName = themeParameters->getValue(SOURCE_TABLE_BASE).toString();
-        size_t pos = sourceTableName.find(levelTemplate);
-        if (pos != std::string::npos) {
-            sourceTableName.replace(pos, levelTemplate.length(), sourceLevel);
+        {
+            size_t sourceLevel = ign::data::String(targetLevel).toInteger() + 1;
+            std::string sourceLevelStr = ign::data::Integer(sourceLevel).toString();
+            std::string sourceTableName = themeParameters->getValue(SOURCE_TABLE_BASE).toString();
+            size_t pos = sourceTableName.find(levelTemplate);
+            if (pos != std::string::npos) {
+                sourceTableName.replace(pos, levelTemplate.length(), sourceLevelStr);
+            }
+            themeParameters->setParameter(SOURCE_TABLE, ign::data::String(sourceTableName));
         }
-        themeParameters->setParameter(SOURCE_TABLE, ign::data::String(sourceTableName));
 
         //DEBUG
         // context->setVerboseDataBaseManager(true);
@@ -148,12 +166,14 @@ int main(int argc, char *argv[])
         ome2::utils::setTableName<app::params::ThemeParametersS>(TARGET_TABLE);
         ome2::utils::setTableName<app::params::ThemeParametersS>(SOURCE_TABLE);
         ome2::utils::setTableName<epg::params::EpgParametersS>(TARGET_BOUNDARY_TABLE);
+        ome2::utils::setTableName<app::params::ThemeParametersS>(AU_NAME_TABLE);
+        ome2::utils::setTableName<app::params::ThemeParametersS>(AU_GEOMETRY_TABLE);
 
 
         logger->log(epg::log::INFO, "[ START AU MERGING PROCESS ] " + epg::tools::TimeTools::getTime());
 
         //lancement du traitement
-        app::calcul::AuMergingOp::Compute(countryCode, verbose);
+        app::calcul::AuMergingOp2::Compute(countryCode, verbose);
 
 		logger->log(epg::log::INFO, "[ END AU MERGING PROCESS ] " + epg::tools::TimeTools::getTime());
     }

@@ -1,5 +1,4 @@
 ## [1.1.0] - 2026-09-14
-
 ### Added
 - Added a command-line parameter to specify the target database name.
 

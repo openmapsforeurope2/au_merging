@@ -3,7 +3,7 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**", "${workspaceFolder}/../libepg/include", "${workspaceFolder}/../sd-socle/include", "${workspaceFolder}/../libepg/src", "${workspaceFolder}/../sd-socle/src"
+                "${workspaceFolder}/**", "${workspaceFolder}/../libepg/include", "${workspaceFolder}/../socle/include", "${workspaceFolder}/../libepg/src", "${workspaceFolder}/../socle/src"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

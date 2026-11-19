@@ -211,8 +211,10 @@ namespace calcul{
             _shapeLogger->writeFeature( "result", f );
 
             ign::geometry::MultiPolygon const& mergedMp = mergedGeom->asMultiPolygon();
-            for ( size_t i = 0 ; i < mergedMp.numGeometries() ; ++i ) {
-                for ( size_t j = 0 ; j < mergedMp.polygonN(i).numRings() ; ++j ) {
+            for ( size_t i = 0 ; i < mergedMp.numGeometries() ; ++i )
+            {
+                for ( size_t j = 0 ; j < mergedMp.polygonN(i).numRings() ; ++j )
+                {
                     bool errorFound = false;
                     if (epg::tools::geometry::isSlimSurface(mergedMp.polygonN(i).ringN(j), slimSurfaceWidth)) {
                         _logger->log(epg::log::WARN, "slim surface detected");

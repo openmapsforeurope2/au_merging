@@ -58,7 +58,7 @@
         {
             "label": "run the code",
             "type": "shell",
-            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging_dev ./bin/au_merging --c /usr/local/src/au_merging/config/epg_parameters.ini --sl 2 --tl 1 --s 20251113 fr",
+            "command": "docker run --privileged -v ${workspaceFolder}:/usr/local/src/au_merging au_merging_dev ./bin/au_merging --c /usr/local/src/au_merging/config/epg_parameters.ini --l 5 --s 20261118 fr",
             "group": "build",
             "problemMatcher": []
         },

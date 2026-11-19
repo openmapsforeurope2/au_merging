@@ -21,7 +21,7 @@ Voici le graphe des dépendances :
 Le socle logiciel de l'IGN regroupe un ensemble de bibliothèques développées en interne qui permettent d'unifier l'accès aux bibliothèques c++ de traitement et de stockage de données géographiques.
 On y trouve notamment des modèles de données pivots (géométries, objet attributaire), des fonctions de lecture/écriture de conteneurs d'objets, des opérations sur les géométries, de nombreux algorithmes et outils spécifiquement conçus pour répondre à des problématiques géomaticiennes...
 
-Le code source du socle ce trouve sur le dépôt [sd-socle](http://gitlab.forge-idi.ign.fr/socle/sd-socle.git)
+Le code source du socle ce trouve sur le dépôt [socle](https://gitlab.ign.fr/rdi/archivage/commons/socle.git)
 
 ### LibEPG 
 
